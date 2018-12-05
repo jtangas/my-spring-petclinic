@@ -1,9 +1,9 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 
-import User from '../models/user';
-import { hashPassword } from '../helpers/user';
-import uuid from '../helpers/uuid';
+import User from '../../models/user';
+import { hashPassword } from '../../helpers/user';
+import uuid from '../../helpers/uuid';
 
 export default () => {
   let router = express.Router();

@@ -1,3 +1,5 @@
+import lodash from 'lodash';
+
 const initialState = {
   current: {
     firstName: null,
@@ -23,15 +25,17 @@ export default (state = initialState, action) => {
         list: listItems,
       };
     case 'LOAD_USERS':
+      const loadedUsers = lodash.union(state.list, action.payload);
       return {
         ...state,
-        list: action.payload,
+        list: loadedUsers,
         fetched: true,
       };
     case 'ADD_NEW_USER':
+      const addedUser = lodash.union(state.list, action.payload);
       return {
         ...state,
-        list: state.list.concat(action.payload),
+        list: addedUser,
       };
     case 'LOGIN_ACTION':
       return {

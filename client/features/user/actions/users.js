@@ -1,33 +1,39 @@
-const loadUsersAction = () => dispatch => new Promise((resolve, reject) => {
-  try {
-    fetch('/api/user')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          dispatch({
-            type: 'LOAD_USERS',
-            payload: data.data,
-          });
-        } else {
-          dispatch({
-            type: 'LOAD_USERS',
-            payload: []
-          });
-          dispatch({
-            type: 'API_REQUESTED',
-            payload: {
-              id: data.requestId,
-              message: data.message,
-              success: data.success,
-            }
-          })
+const loadUsersAction = (type, users = [], perPage = 10, page = 1) => dispatch => {
+    if (users.length === 0) {
+      fetch(`/api/${type}?page=${page}&perPage=${perPage}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            dispatch({
+              type: `LOAD_USERS`,
+              payload: data.data,
+            });
+          } else {
+            dispatch({
+              type: `LOAD_USERS`,
+              payload: []
+            });
+            dispatch({
+              type: 'API_REQUESTED',
+              payload: {
+                id: data.requestId,
+                message: data.message,
+                success: data.success,
+              }
+            });
+            return data.data;
+          }
+        });
+    } else {
+      let start = (page - 1) * perPage;
+      let end = (page * perPage);
+      return users.filter(user => {
+        if (user.type === type) {
+          return user;
         }
-      });
-    resolve('ok');
-  } catch (err) {
-    reject(err);
-  }
-});
+      }).slice(start, end);
+    }
+};
 
 const updateUserAction = (reportId, values) => dispatch => {
   fetch(`/api/user/${reportId}`, {

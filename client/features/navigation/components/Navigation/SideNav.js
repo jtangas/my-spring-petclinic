@@ -1,10 +1,13 @@
 import React from 'react';
+import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
 
-import { GenerateGroups, GenerateMenuItem } from 'util/helpers/Menu';
+import { GenerateGroups, GenerateMenuItem } from 'features/navigation/components/Navigation/Menu';
 
-const SideNav = props => {
+export default compose(
+  withRouter
+)(props => {
   const { routes, history, authenticated, dispatch, staticContext, match, location, ...rest } = props;
 
   const groups = [...new Set(routes.map(route => route.group))].filter(n => n);
@@ -38,6 +41,4 @@ const SideNav = props => {
       }
     </Menu>
   )
-};
-
-export default withRouter(SideNav);
+});

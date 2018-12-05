@@ -9,7 +9,10 @@ export default () => {
   let router = express.Router();
 
   router.use((req, res, next) => {
-    console.log('API_REQUESTED');
+    console.log({
+      message: "API_REQUESTED",
+      path: req.originalUrl,
+    });
     next();
   });
 

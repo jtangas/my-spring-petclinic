@@ -43,7 +43,7 @@ const GenerateRows = props => {
           })
         }
         <Table.Cell key={`actions_${user._id}`}>
-          <Button onClick={() => history.push(`/users/${user.type}/${user._id}/edit`)}>Edit</Button>
+          <Button onClick={() => history.push(`/${user.type}/${user._id}/edit`)}>Edit</Button>
           <Button onClick={() => console.log(user._id)}>Delete</Button>
         </Table.Cell>
       </Table.Row>
@@ -53,21 +53,20 @@ const GenerateRows = props => {
 
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(props => {
-  const { users, loadUsers, fetched, history } = props;
+  const { users = [], fetched, loadUsers, history, type = 'users' } = props;
 
-  if (!fetched && users.length === 0) {
-    loadUsers();
-  }
+  let usersToDisplay = [];
+  usersToDisplay = loadUsers(type, users, 10, 1);
 
   return (
     <Segment basic style={{ padding: '10px' }}>
-      {users.length === 0 && (<div>
+      {usersToDisplay.length === 0 && (<div>
         <p>No Users Found</p>
-        <Button onClick={() => loadUsers()}>
+        <Button onClick={() => loadUsers(type, users, 10, 1)}>
           Load Users
         </Button>
       </div>)}
-      {users.length > 0 && (
+      {usersToDisplay.length > 0 && (
         <Table striped>
           <Table.Header>
             <Table.Row>
@@ -76,7 +75,7 @@ export default withRouter(connect(mapStateToProps, mapDispatchToProps)(props => 
               ))}
               <Table.HeaderCell>Actions</Table.HeaderCell>
             </Table.Row>
-            <GenerateRows history={history} data={users} />
+            <GenerateRows history={history} data={usersToDisplay} />
           </Table.Header>
         </Table>
       )}

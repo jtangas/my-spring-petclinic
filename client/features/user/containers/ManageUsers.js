@@ -40,7 +40,7 @@ export default
       updateUser,
     } = props;
 
-    const { type, id, action } = match.params;
+    const { type = 'users', id, action } = match.params;
     const handleUpdateSubmit = values => updateUser(id, values);
     const handleSubmit = values => addNewUser(values);
 

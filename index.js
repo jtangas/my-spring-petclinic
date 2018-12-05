@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
@@ -6,19 +7,35 @@ import ip from 'ip';
 import compression from 'compression';
 
 import routes from './server/routes';
-import authRoutes from './server/auth/routes';
-import userRoutes from './server/user/routes';
+import authRoutes from './server/routes/auth/routes';
+import userRoutes from './server/routes/user/routes';
+import vetRoutes from './server/routes/vet/routes';
+import petRoutes from './server/routes/pet/routes';
+import ownerRoutes from './server/routes/owner/routes';
+import visitRoutes from './server/routes/visit/routes';
+import appointmentRoutes from './server/routes/appointment/routes';
 import devServer from './server/middleware/devServer';
 import renderTemplate from './templates/index-page';
 
-const {NODE_ENV, PORT} = process.env;
+dotenv.config();
+
+const {NODE_ENV, PORT, MONGODB_HOST, MONGODB_PASS, MONGODB_USER} = process.env;
 let app = express();
 let port = PORT || 5000;
 let router = routes();
 let authRouter = authRoutes();
 let userRouter = userRoutes();
+let vetRouter = vetRoutes();
+let ownerRouter = ownerRoutes();
+let visitRouter = visitRoutes();
+let appointmentRouter = appointmentRoutes();
+let petRouter = petRoutes();
 
-mongoose.connect('mongodb://localhost:27017').catch(err => console.warn('Error: Unable to connect'))
+mongoose.connect(MONGODB_HOST, {
+  useNewUrlParser: true,
+  user: MONGODB_USER,
+  pass: MONGODB_PASS,
+}).catch(err => console.warn('Error: Unable to connect'));
 
 app.use(compression());
 app.use('/static', express.static('public/assets'));
@@ -36,7 +53,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use('/api', router);
 app.use('/api/auth', authRouter);
-app.use('/api/user', userRouter);
+app.use('/api/users', userRouter);
+app.use('/api/vets', vetRouter);
+app.use('/api/pets', petRouter);
+app.use('/api/owners', ownerRouter);
+app.use('/api/visits', visitRouter);
+app.use('/api/appointments', appointmentRouter);
+
 app.get('*', (req, res) => {
   if (NODE_ENV === 'development') {
     renderTemplate('main.js');
