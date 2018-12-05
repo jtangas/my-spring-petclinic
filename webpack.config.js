@@ -1,8 +1,10 @@
 import path from 'path';
+import webpack from 'webpack';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
 import IndexPagePlugin from './templates/IndexPluginTemplate';
 
 const { NODE_ENV } = process.env;
+const isDev = NODE_ENV === 'development';
 const removeEmpty = configs => configs.filter(config => config);
 
 module.exports = () => (
@@ -65,6 +67,15 @@ module.exports = () => (
       hints: false,
     },
     plugins: removeEmpty([
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: JSON.stringify('development')
+        }
+      }),
+      new webpack.LoaderOptionsPlugin({
+        minimize: false,
+        debug: true,
+      }),
       new IndexPagePlugin(),
     ])
   }

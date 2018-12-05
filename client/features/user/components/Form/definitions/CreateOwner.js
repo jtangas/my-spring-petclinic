@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 export const Values = {
   firstName: '',
   lastName: '',
-  type: '',
+  type: 'owners',
 };
 
 export const Validation = Yup.object().shape({
@@ -33,8 +33,28 @@ export const Fields = [
     placeholder: 'Your Last Name',
   },
   {
+    type: 'text',
+    name: 'address',
+    label: 'Street Address',
+    placeholder: 'Street Address',
+  },
+  {
+    type: 'text',
+    name: 'city',
+    label: 'City',
+    placeholder: 'Anywhere',
+  },
+  {
+    type: 'text',
+    name: 'telephone',
+    label: 'Telephone',
+    placeholder: '5558765309',
+  },
+  {
+    type: ''
+  },
+  {
     type: 'hidden',
     name: 'type',
-    value: 'owner',
   },
 ];

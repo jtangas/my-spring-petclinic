@@ -7,7 +7,6 @@ const initialState = {
     id: null,
   },
   list: [],
-  fetched: false,
 };
 
 export default (state = initialState, action) => {
@@ -29,7 +28,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         list: loadedUsers,
-        fetched: true,
       };
     case 'ADD_NEW_USER':
       const addedUser = lodash.union(state.list, action.payload);
@@ -48,15 +46,7 @@ export default (state = initialState, action) => {
         }
       };
     case 'LOGOUT_ACTION':
-      return {
-        ...state,
-        current: {
-          ...state.currentUser,
-          firstName: null,
-          lastName: null,
-          id: null,
-        }
-      };
+      return initialState;
     default:
       return state;
   }

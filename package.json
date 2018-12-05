@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
+    "autoprefixer": "^9.4.2",
     "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
     "codemirror": "^5.41.0",
@@ -28,6 +29,7 @@
     "moment": "^2.22.2",
     "mongoose": "^5.3.7",
     "path": "^0.12.7",
+    "query-string": "^6.2.0",
     "react": "^16.6.0",
     "react-codemirror2-spellcheck": "^2.0.2",
     "react-datepicker": "^1.7.0",

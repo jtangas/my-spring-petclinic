@@ -35,43 +35,43 @@ mongoose.connect(MONGODB_HOST, {
   useNewUrlParser: true,
   user: MONGODB_USER,
   pass: MONGODB_PASS,
-}).catch(err => console.warn('Error: Unable to connect'));
+}).then(() => {
+  app.use(compression());
+  app.use('/static', express.static('public/assets'));
 
-app.use(compression());
-app.use('/static', express.static('public/assets'));
-
-if (NODE_ENV === 'development') {
-  devServer(app);
-}
-
-router.use((req, res, next) => {
-  next();
-});
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-
-app.use('/api', router);
-app.use('/api/auth', authRouter);
-app.use('/api/users', userRouter);
-app.use('/api/vets', vetRouter);
-app.use('/api/pets', petRouter);
-app.use('/api/owners', ownerRouter);
-app.use('/api/visits', visitRouter);
-app.use('/api/appointments', appointmentRouter);
-
-app.get('*', (req, res) => {
   if (NODE_ENV === 'development') {
-    renderTemplate('main.js');
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-  } else {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    devServer(app);
   }
-});
 
-app.listen(port, '0.0.0.0', err => {
-  if (err) console.log(err);
+  router.use((req, res, next) => {
+    next();
+  });
 
-  console.log('LAN: ' + ip.address());
-  console.log('PORT: ' + port);
-});
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({extended: true}));
+
+  app.use('/api', router);
+  app.use('/api/auth', authRouter);
+  app.use('/api/users', userRouter);
+  app.use('/api/vets', vetRouter);
+  app.use('/api/pets', petRouter);
+  app.use('/api/owners', ownerRouter);
+  app.use('/api/visits', visitRouter);
+  app.use('/api/appointments', appointmentRouter);
+
+  app.get('*', (req, res) => {
+    if (NODE_ENV === 'development') {
+      renderTemplate('main.js');
+      res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    } else {
+      res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    }
+  });
+
+  app.listen(port, '0.0.0.0', err => {
+    if (err) console.log(err);
+
+    console.log('LAN: ' + ip.address());
+    console.log('PORT: ' + port);
+  });
+}).catch(err => console.warn('Error: Unable to connect'));

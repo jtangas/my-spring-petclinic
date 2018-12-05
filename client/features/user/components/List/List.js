@@ -1,9 +1,10 @@
 import React from 'react';
+import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Segment, Button, Table } from 'semantic-ui-react';
 
-import { loadUsersAction } from 'features/user/actions/users';
+import { loadUsersAction, fetchUsersAction } from 'features/user/actions/users';
 import TableHeaders from 'features/user/components/Form/definitions/TableHeaders';
 
 const mapDispatchToProps = {
@@ -30,9 +31,18 @@ const extractValue = value => {
 
 const GenerateRows = props => {
   const { data, history } = props;
+  if (data.length === 0) {
+    return (
+      <Table.Row>
+        <Table.Cell width={16}>No Users</Table.Cell>
+      </Table.Row>
+    );
+  }
+
   return (
+
     data.map(user => (
-      <Table.Row key={`row_${user.name}`}>
+      <Table.Row key={`row_${user._id}`}>
         {
           TableHeaders.map(column => {
             if (user.hasOwnProperty(column.name)) {
@@ -43,7 +53,7 @@ const GenerateRows = props => {
           })
         }
         <Table.Cell key={`actions_${user._id}`}>
-          <Button onClick={() => history.push(`/${user.type}/${user._id}/edit`)}>Edit</Button>
+          <Button onClick={() => history.push(`/users/${user.type}/edit/${user._id}`)}>Edit</Button>
           <Button onClick={() => console.log(user._id)}>Delete</Button>
         </Table.Cell>
       </Table.Row>
@@ -52,33 +62,124 @@ const GenerateRows = props => {
 };
 
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(props => {
-  const { users = [], fetched, loadUsers, history, type = 'users' } = props;
+class List extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      noResults: false,
+      fetched: false,
+      page: 1,
+      perPage: 10,
+      results: [],
+    };
+  }
 
-  let usersToDisplay = [];
-  usersToDisplay = loadUsers(type, users, 10, 1);
+  loadUsers(type, page, perPage) {
+    fetch(`/api/${type}?page=${page}&perPage=${perPage}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          this.setState(state => ({
+            ...state,
+            results: data.data,
+          }));
+        } else {
+          this.setState(state => ({
+            ...state,
+            noResults: true,
+          }));
+        }
+      })
+      .catch(err => {
+        this.setState(state => ({
+          ...state,
+          noResults: true,
+        }));
+      });
+  }
 
-  return (
-    <Segment basic style={{ padding: '10px' }}>
-      {usersToDisplay.length === 0 && (<div>
-        <p>No Users Found</p>
-        <Button onClick={() => loadUsers(type, users, 10, 1)}>
-          Load Users
-        </Button>
-      </div>)}
-      {usersToDisplay.length > 0 && (
-        <Table striped>
-          <Table.Header>
-            <Table.Row>
-              {TableHeaders.map(header => (
-                <Table.HeaderCell>{header.display}</Table.HeaderCell>
-              ))}
-              <Table.HeaderCell>Actions</Table.HeaderCell>
-            </Table.Row>
-            <GenerateRows history={history} data={usersToDisplay} />
-          </Table.Header>
-        </Table>
-      )}
-    </Segment>
-  )
-}));
+  componentWillReceiveProps(nextProps) {
+    const {
+      type,
+    } = nextProps;
+
+    const {
+      page,
+      perPage,
+    } = this.state;
+
+    this.loadUsers(type, page, perPage);
+  }
+
+  componentWillMount() {
+    const {
+      type = 'users',
+    } = this.props;
+
+    const {
+      page,
+      perPage,
+    } = this.state;
+
+    fetch(`/api/${type}?page=${page}&perPage=${perPage}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          this.setState(state => ({
+            ...state,
+            results: data.data,
+          }));
+        } else {
+          this.setState(state => ({
+            ...state,
+            noResults: true,
+          }));
+        }
+      })
+      .catch(err => {
+        this.setState(state => ({
+          ...state,
+          noResults: true,
+        }));
+      });
+  }
+
+  render() {
+    const {
+      history,
+      type = 'users',
+    } = this.props;
+
+    const {
+      results,
+    } = this.state;
+
+    const typeDisplay = `${type.slice(0,1).toUpperCase()}${type.slice(1)}`;
+
+    return (
+      <Segment basic style={{ padding: '10px' }}>
+        {results.length === 0 && (<div>
+          <p>No {typeDisplay} Found</p>
+        </div>)}
+        {results.length > 0 && (
+          <Table striped>
+            <Table.Header>
+              <Table.Row>
+                {TableHeaders.map(header => (
+                  <Table.HeaderCell key={header.display}>{header.display}</Table.HeaderCell>
+                ))}
+                <Table.HeaderCell>Actions</Table.HeaderCell>
+              </Table.Row>
+              <GenerateRows history={history} data={results} />
+            </Table.Header>
+          </Table>
+        )}
+      </Segment>
+    )
+  }
+}
+
+export default compose(
+  withRouter,
+  connect(mapStateToProps, mapDispatchToProps),
+)(List);

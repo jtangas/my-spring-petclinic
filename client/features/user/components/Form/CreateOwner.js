@@ -9,8 +9,6 @@ export default props => {
 
   const Template = UserDefinedTemplate || FullWidthTemplate;
 
-  console.log(Fields);
-
   return (
     <Formik
       initialValues={Values}

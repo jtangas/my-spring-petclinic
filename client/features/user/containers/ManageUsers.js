@@ -1,11 +1,12 @@
 import React from 'react';
+import * as qs from 'query-string';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Container } from 'semantic-ui-react';
 
 import { createUserAction, updateUserAction } from 'features/user/actions/users';
-import UserList from 'features/user/components/List/List';
+import List from 'features/user/components/List/List';
 import CreateOwner from 'features/user/components/Form/CreateOwner';
 import CreateVet from 'features/user/components/Form/CreateVet';
 import UserTemplate from 'features/user/components/Form/templates/UserTemplate';
@@ -18,11 +19,10 @@ const mapDispatchToProps = {
 
 const CreateTemplate = props => {
   const { type, ...rest } = props;
-
   switch (type) {
-    case 'vet':
+    case 'vets':
       return <CreateVet {...rest} />;
-    case 'owner':
+    case 'owners':
     default:
       return <CreateOwner {...rest} />;
   }
@@ -62,7 +62,7 @@ export default
     if (action === 'view' && !id || (!action && !id)) {
       return (
         <Container style={{ padding: '10px', flex: 1}}>
-          <UserList type={type}/>
+          <List type={type}/>
         </Container>
       )
     }

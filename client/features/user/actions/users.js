@@ -1,42 +1,39 @@
-const loadUsersAction = (type, users = [], perPage = 10, page = 1) => dispatch => {
-    if (users.length === 0) {
-      fetch(`/api/${type}?page=${page}&perPage=${perPage}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            dispatch({
-              type: `LOAD_USERS`,
-              payload: data.data,
-            });
-          } else {
-            dispatch({
-              type: `LOAD_USERS`,
-              payload: []
-            });
-            dispatch({
-              type: 'API_REQUESTED',
-              payload: {
-                id: data.requestId,
-                message: data.message,
-                success: data.success,
-              }
-            });
-            return data.data;
-          }
-        });
-    } else {
-      let start = (page - 1) * perPage;
-      let end = (page * perPage);
-      return users.filter(user => {
-        if (user.type === type) {
-          return user;
+const loadUsersAction = (type, users = [], perPage = 10, page = 1) => dispatch => new Promise((resolve, reject) => {
+  let start = (page - 1) * perPage;
+  let end = page * perPage;
+  if (start >= users.length || end > users.length) {
+    fetch(`/api/${type}?page=${page}&perPage=${perPage}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          dispatch({
+            type: `LOAD_USERS`,
+            payload: data.data,
+          });
+        } else {
+          dispatch({
+            type: `LOAD_USERS`,
+            payload: []
+          });
+          dispatch({
+            type: 'API_REQUESTED',
+            payload: {
+              id: data.requestId,
+              message: data.message,
+              success: data.success,
+            }
+          });
+          resolve([]);
         }
-      }).slice(start, end);
-    }
-};
+      });
+  } else {
+    resolve(users.slice(start, end));
+    return users.slice(start, end);
+  }
+});
 
-const updateUserAction = (reportId, values) => dispatch => {
-  fetch(`/api/user/${reportId}`, {
+const updateUserAction = (userId, values) => dispatch => {
+  fetch(`/api/users/${userId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -77,7 +74,8 @@ const updateUserAction = (reportId, values) => dispatch => {
 
 const createUserAction = values => dispatch => new Promise((resolve, reject) => {
   try {
-    fetch('/api/user', {
+    const { type } = values;
+    fetch(`/api/${type}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
@@ -101,6 +99,7 @@ const createUserAction = values => dispatch => new Promise((resolve, reject) => 
 });
 
 export {
+  fetchUsersAction,
   loadUsersAction,
   createUserAction,
   updateUserAction,

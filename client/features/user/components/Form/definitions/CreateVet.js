@@ -3,7 +3,8 @@ import * as Yup from 'yup';
 export const Values = {
   firstName: '',
   lastName: '',
-  type: '',
+  specialties: [],
+  type: 'vets',
 };
 
 export const Validation = Yup.object().shape({
@@ -33,8 +34,15 @@ export const Fields = [
     placeholder: 'Your Last Name',
   },
   {
+    type: 'checkboxGroup',
+    name: 'specialties',
+    label: 'Specialties',
+    options: [
+      {id:'aaaaa',name:'Anesthesia'}
+    ],
+  },
+  {
     type: 'hidden',
     name: 'type',
-    value: 'vet',
   },
 ];
