@@ -4,17 +4,75 @@ import { Formik } from 'formik';
 
 import { Values, Validation, Fields } from 'features/user/components/Form/definitions/CreateOwner';
 
-export default props => {
-  const { handleSubmit, render: UserDefinedTemplate } = props;
+class CreateOwner extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      fieldList: [],
+      currentUser: null,
+    }
+  }
 
-  const Template = UserDefinedTemplate || FullWidthTemplate;
+  componentWillReceiveProps(nextProps) {
+    const {userId} = nextProps;
+    if (userId !== null) {
+      fetch(`/api/owners/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            this.setState(state => ({
+              ...state,
+              currentUser: data.data,
+            }));
+          }
+        })
+    }
+  }
 
-  return (
-    <Formik
-      initialValues={Values}
-      onSubmit={handleSubmit}
-      validationSchema={Validation}
-      render={props => <Template formFields={Fields} {...props} />}
-    />
-  )
-};
+  componentWillMount() {
+    const { userId } = this.props;
+    if (userId !== null) {
+      fetch(`/api/owners/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            this.setState(state => ({
+              ...state,
+              currentUser: data.data,
+            }));
+          }
+        })
+    } else {
+      this.setState(state => ({
+        ...state,
+        currentUser: null,
+      }))
+    }
+  }
+
+  render() {
+    const { handleSubmit: submitHandler, render: UserDefinedTemplate, userId } = this.props;
+    const Template = UserDefinedTemplate || FullWidthTemplate;
+    const { currentUser } = this.state;
+
+    console.log(submitHandler);
+
+    let initialValues = currentUser || Values;
+
+    if (userId !== undefined && !currentUser) {
+      return (<div><p>Loading form</p></div>);
+    }
+
+    return (
+      <Formik
+        enableReinitialize
+        initialValues={initialValues}
+        onSubmit={submitHandler}
+        validationSchema={Validation}
+        render={formikProps => <Template formFields={Fields} {...formikProps} />}
+      />
+    )
+  }
+}
+
+export default CreateOwner;

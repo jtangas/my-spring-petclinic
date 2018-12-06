@@ -13,6 +13,7 @@ import vetRoutes from './server/routes/vet/routes';
 import petRoutes from './server/routes/pet/routes';
 import ownerRoutes from './server/routes/owner/routes';
 import visitRoutes from './server/routes/visit/routes';
+import systemRoutes from './server/routes/system/routes';
 import appointmentRoutes from './server/routes/appointment/routes';
 import devServer from './server/middleware/devServer';
 import renderTemplate from './templates/index-page';
@@ -30,6 +31,7 @@ let ownerRouter = ownerRoutes();
 let visitRouter = visitRoutes();
 let appointmentRouter = appointmentRoutes();
 let petRouter = petRoutes();
+let systemRouter = systemRoutes();
 
 mongoose.connect(MONGODB_HOST, {
   useNewUrlParser: true,
@@ -51,6 +53,7 @@ mongoose.connect(MONGODB_HOST, {
   app.use(bodyParser.urlencoded({extended: true}));
 
   app.use('/api', router);
+  app.use('/api/system', systemRouter);
   app.use('/api/auth', authRouter);
   app.use('/api/users', userRouter);
   app.use('/api/vets', vetRouter);

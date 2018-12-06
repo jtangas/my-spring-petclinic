@@ -33,7 +33,11 @@ const loadUsersAction = (type, users = [], perPage = 10, page = 1) => dispatch =
 });
 
 const updateUserAction = (userId, values) => dispatch => {
-  fetch(`/api/users/${userId}`, {
+  const { type } = values;
+
+  console.log('test');
+
+  fetch(`/api/${type}/${userId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -99,7 +103,6 @@ const createUserAction = values => dispatch => new Promise((resolve, reject) => 
 });
 
 export {
-  fetchUsersAction,
   loadUsersAction,
   createUserAction,
   updateUserAction,

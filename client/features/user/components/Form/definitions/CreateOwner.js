@@ -11,8 +11,6 @@ export const Validation = Yup.object().shape({
     .required('First Name is required'),
   lastName: Yup.string()
     .required('Last Name is required'),
-  type: Yup.string()
-    .required('User Type is required')
 });
 
 export const Fields = [
@@ -49,9 +47,6 @@ export const Fields = [
     name: 'telephone',
     label: 'Telephone',
     placeholder: '5558765309',
-  },
-  {
-    type: ''
   },
   {
     type: 'hidden',

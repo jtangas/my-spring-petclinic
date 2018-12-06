@@ -5,23 +5,14 @@ import { withRouter } from 'react-router-dom';
 import { Container } from 'semantic-ui-react';
 
 import NotFound from 'features/app/containers/NotFound';
+import {createUserAction, updateUserAction} from "../../user/actions/users";
+import PetTemplate from 'features/pet/components/Form/templates/CreatePetTemplate';
+import CreatePet from 'features/pet/components/Form/CreatePet';
 
 const mapDispatchToProps = {
-  //addNewUser: createUserAction,
-  //updateUser: updateUserAction,
+  addNewUser: createUserAction,
+  updateUser: updateUserAction,
 };
-/*
-const CreateTemplate = props => {
-  const { type, ...rest } = props;
-
-  switch (type) {
-    case 'vet':
-      return <CreateVet {...rest} />;
-    case 'owner':
-    default:
-      return <CreateOwner {...rest} />;
-  }
-};*/
 
 export default
 compose(
@@ -36,34 +27,32 @@ compose(
   } = props;
 
   const { id, action } = match.params;
-  //const handleUpdateSubmit = values => updateUser(id, values);
-  //const handleSubmit = values => addNewUser(values);
+  const handleUpdateSubmit = values => updateUser(id, values);
+  const handleSubmit = values => addNewUser(values);
 
-  return <Container content="Test" />;
-
-/*  if (id !== null && id !== false && action === 'edit') {
+  if (id !== null && id !== false && action === 'edit') {
     return (
-      <CreateTemplate
-        type={type}
-        userId={id}
-        render={UserTemplate}
-        handleSubmit={handleUpdateSubmit}
+      <CreatePet
+        petId={id}
+        render={PetTemplate}
+        submitHandler={handleUpdateSubmit}
       />
     );
   }
 
   if (action === 'create') {
-    return <CreateTemplate type={type} render={UserTemplate} handleSubmit={handleSubmit} />
+    return <CreatePet render={PetTemplate} submitHandler={handleSubmit} />
   }
 
   if (action === 'view' && !id || (!action && !id)) {
     return (
       <Container style={{ padding: '10px', flex: 1}}>
-        <UserList type={type}/>
+        {/*<List type={type}/>*/}
+        <p>List of pets</p>
       </Container>
     )
   }
 
-  return <NotFound/>*/
+  return <NotFound/>
 
 });

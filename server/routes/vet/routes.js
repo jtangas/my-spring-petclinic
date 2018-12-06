@@ -1,11 +1,103 @@
 import express from 'express';
+import mongoose from 'mongoose';
 
 import Vets from '../../models/vet';
-import VetSpecialties from '../../models/vet-specialty';
 import uuid from '../../helpers/uuid';
 
 export default () => {
   let router = express.Router();
+
+  router.route("/:id")
+    .put((req, res) => {
+      const { id } = req.params;
+      const {
+        firstName,
+        lastName,
+        specialties,
+      } = req.body;
+
+      const {
+        _id,
+      } = req.body;
+
+      if (id !== _id) {
+        res.json({
+          success: false,
+          message: 'Malformed Request',
+          requestId: uuid(),
+        });
+        return;
+      }
+
+      Vets.findOne({_id: id}, (err, vet) => {
+        if (err) {
+          res.json({
+            success: false,
+            message: err.toString(),
+            requestId: uuid(),
+          });
+          return;
+        }
+
+        vet.set({
+          firstName,
+          lastName,
+          specialties,
+        });
+
+        vet.save((err, updatedVet) => {
+          if (err) {
+            res.json({
+              success: false,
+              message: err.toString(),
+              requestId: uuid(),
+            });
+            return;
+          }
+
+          res.json({
+            success: true,
+            message: 'Updated vet successfully',
+            data: updatedVet,
+            requestId: uuid(),
+          });
+        });
+      });
+    })
+    .get((req, res) => {
+      const { id } = req.params;
+      const userId = mongoose.Types.ObjectId(id);
+
+      Vets.aggregate([
+        {
+          $match: {_id: userId},
+        },
+        {
+          $project: {
+            _id: 1,
+            firstName: 1,
+            lastName: 1,
+            specialties: 1,
+            type: 'vets',
+          }
+        }], (err, result) => {
+        if (err) {
+          res.json({
+            success: false,
+            message: err.toString(),
+            requestId: uuid(),
+          });
+          return;
+        }
+
+        res.json({
+          success: true,
+          message: 'user fetched successfully',
+          data: result[0],
+          requestId: uuid(),
+        })
+      })
+    });
 
   router.route("/")
     .post(async (req, res) => {
@@ -70,72 +162,6 @@ export default () => {
         res.json({
           success: true,
           message: 'Fetched vets successfully',
-          data: result,
-          requestId: uuid(),
-        });
-      });
-    });
-
-  router.route("/specialties")
-    .post(async (req, res) => {
-      const { name } = req.body;
-
-      VetSpecialties.find({ name }, async(err, docs) => {
-        if (docs !== null && docs.length > 0) {
-          res.json({
-            success: false,
-            message: 'Specialty already exists',
-            requestId: uuid(),
-          });
-        } else {
-          let newVetSpecialty = new VetSpecialties();
-          newVetSpecialty.name = name;
-
-          newVetSpecialty.save(err => {
-            if (err)
-              res.send(err);
-
-            res.json({
-              success: true,
-              message: 'specialty created',
-              requestId: uuid(),
-            })
-          })
-        }
-      })
-        .catch(err => {
-          res.json({
-            success: false,
-            message: 'Database failure',
-            error: err.toString(),
-            requestId: uuid(),
-          });
-        });
-    })
-    .get((req, res) => {
-      VetSpecialties.aggregate([
-        {
-          $match: {},
-        },
-        {
-          $project: {
-            _id: 0,
-            id: "$$ROOT._id",
-            name: 1,
-          }
-        }
-      ], (err, result) => {
-        if (err) {
-          res.json({
-            success: false,
-            message: err.toString(),
-            requestId: uuid(),
-          });
-          return;
-        }
-        res.json({
-          success: true,
-          message: 'Fetched specialties successfully',
           data: result,
           requestId: uuid(),
         });

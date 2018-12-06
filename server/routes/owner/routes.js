@@ -1,12 +1,110 @@
 import express from 'express';
+import mongoose from 'mongoose';
 
 import uuid from '../../helpers/uuid';
 import Owner from "../../models/owner";
-import {hashPassword} from "../../helpers/user";
-import User from "../../models/user";
 
 export default () => {
   let router = express.Router();
+
+  router.route("/:id")
+    .put((req, res) => {
+      const { id } = req.params;
+      const {
+        firstName,
+        lastName,
+        address,
+        city,
+        telephone,
+      } = req.body;
+
+      const {
+        _id,
+      } = req.body;
+
+      if (id !== _id) {
+        res.json({
+          success: false,
+          message: 'Malformed Request',
+          requestId: uuid(),
+        });
+        return;
+      }
+
+      Owner.findOne({_id: id}, (err, owner) => {
+        if (err) {
+          res.json({
+            success: false,
+            message: err.toString(),
+            requestId: uuid(),
+          });
+          return;
+        }
+
+        owner.set({
+          firstName,
+          lastName,
+          address,
+          city,
+          telephone,
+        });
+
+        owner.save((err, updatedOwner) => {
+          if (err) {
+            res.json({
+              success: false,
+              message: err.toString(),
+              requestId: uuid(),
+            });
+            return;
+          }
+
+          res.json({
+            success: true,
+            message: 'Updated Owner successfully',
+            data: updatedOwner,
+            requestId: uuid(),
+          });
+        });
+      });
+    })
+    .get((req, res) => {
+      const { id } = req.params;
+      const userId = mongoose.Types.ObjectId(id);
+
+      Owner.aggregate([
+        {
+          $match: {_id: userId},
+        },
+        {
+          $project: {
+            _id: 1,
+            firstName: 1,
+            lastName: 1,
+            address: 1,
+            city: 1,
+            telephone: 1,
+            type: 'owners',
+          }
+        }], (err, result) => {
+
+        if (err) {
+          res.json({
+            success: false,
+            message: err.toString(),
+            requestId: uuid(),
+          });
+          return;
+        }
+
+        res.json({
+          success: true,
+          message: 'user fetched successfully',
+          data: result[0],
+          requestId: uuid(),
+        });
+      });
+    });
 
   router.route("/")
     .get((req, res) => {

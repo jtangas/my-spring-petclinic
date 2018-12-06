@@ -35,7 +35,7 @@ class FlashNotification extends Component {
 
     return (
       <Transition visible={visible} duration={duration} animation={animation} onHide={() => removeMessage(message)} >
-        <Message {...messageProps} floating content style={{ width: '300px'}}>
+        <Message {...messageProps} floating style={{ width: '300px'}}>
           <Message.Header>{message.header}</Message.Header>
           <p>{message.message}</p>
         </Message>
