@@ -5,12 +5,13 @@ import { withRouter } from 'react-router-dom';
 import { Container } from 'semantic-ui-react';
 
 import NotFound from 'features/app/containers/NotFound';
-import {createUserAction, updateUserAction} from "../../user/actions/users";
+import { updateUserAction } from "../../user/actions/users";
+import { createPetAction } from 'features/pet/actions/pets';
 import PetTemplate from 'features/pet/components/Form/templates/CreatePetTemplate';
 import CreatePet from 'features/pet/components/Form/CreatePet';
 
 const mapDispatchToProps = {
-  addNewUser: createUserAction,
+  addNewPet: createPetAction,
   updateUser: updateUserAction,
 };
 
@@ -22,13 +23,13 @@ compose(
   const {
     history,
     match,
-    addNewUser,
+    addNewPet,
     updateUser,
   } = props;
 
   const { id, action } = match.params;
   const handleUpdateSubmit = values => updateUser(id, values);
-  const handleSubmit = values => addNewUser(values);
+  const handleSubmit = values => addNewPet(values);
 
   if (id !== null && id !== false && action === 'edit') {
     return (

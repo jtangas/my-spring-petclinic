@@ -49,7 +49,7 @@ class CreatePet extends React.Component {
   render() {
     const { submitHandler, render: UserDefinedTemplate, petId } = this.props;
 
-    const Template = UserDefinedTemplate || FullWidthTemplate;
+    const Template = UserDefinedTemplate || CreatePetTemplate;
     const { currentPet, fieldList } = this.state;
 
     let initialValues = currentPet || Values;

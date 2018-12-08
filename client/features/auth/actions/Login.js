@@ -1,5 +1,20 @@
 export default values => dispatch => (new Promise((resolve, reject) => {
-    fetch(`/api/auth/login`, {
+  const url = '/api/auth/login';
+  dispatch({
+    type: 'API_REQUEST',
+    endpoint: url,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify(values),
+    actions: {
+      success: 'LOGIN_ACTION',
+    },
+  });
+
+  resolve('ok');
+    /*fetch(`/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
@@ -27,6 +42,6 @@ export default values => dispatch => (new Promise((resolve, reject) => {
           reject('invalid form');
         }
       })
-      .catch(err => reject(err))
+      .catch(err => reject(err))*/
   })
 );

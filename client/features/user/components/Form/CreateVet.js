@@ -33,8 +33,6 @@ class CreateVet extends React.Component {
     const { fieldList } = this.state;
     const { userId } = this.props;
 
-
-
     if (userId !== null) {
       fetch(`/api/vets/${userId}`)
         .then(res => res.json())

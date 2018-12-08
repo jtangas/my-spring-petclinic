@@ -27,7 +27,7 @@ export default () => {
               const responseObj = {
                 success: true,
                 message: 'user successfully authenticated',
-                user: {
+                data: {
                   firstName: user.firstName,
                   lastName: user.lastName,
                   username: user.username,
@@ -36,9 +36,6 @@ export default () => {
                 },
                 requestId: uuid(),
               };
-
-              console.log(responseObj);
-
               res.json(responseObj);
             } else {
               res.json({

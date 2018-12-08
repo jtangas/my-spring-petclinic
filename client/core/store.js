@@ -5,8 +5,9 @@ import { throttle } from 'lodash';
 
 import reducer from 'core/reducers';
 import { saveToStorage, loadFromStorage } from 'core/localStorage';
+import { apiMiddleware, apiRequestHandler } from 'util/helpers/requestHandler';
 
-const enhancer = compose(applyMiddleware(thunk, promise));
+const enhancer = compose(applyMiddleware(thunk, promise, apiMiddleware, apiRequestHandler));
 
 let preLoadedState = loadFromStorage('state');
 
