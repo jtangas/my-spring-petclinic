@@ -22,7 +22,7 @@ class CreatePet extends React.Component {
 
   loadThePage(props) {
     const { petId } = props;
-    const { currentPet } = this.state;
+    const { currentPet, fieldList } = this.state;
 
     if (petId !== undefined && (currentPet === null || (currentPet !== null && currentPet._id !== petId))) {
       fetch(`/api/pets/${petId}`)
@@ -33,6 +33,36 @@ class CreatePet extends React.Component {
               ...state,
               currentPet: data.data,
             }));
+          }
+        })
+    }
+
+    let ownerList = fieldList.find(field => field.name === 'owner' && field.options.length === 0);
+    if (ownerList && ownerList.options.length === 0) {
+      fetch(`/api/owners`)
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          if (data.success) {
+
+
+            const fields = fieldList.filter(field => {
+              if(field.name !== 'owner') {
+                return field;
+              }
+            });
+
+            ownerList = {
+              ...ownerList,
+              options: data.data.map(owner => ({key: owner._id, value: owner._id, text: `${owner.firstName} ${owner.lastName}`})),
+            };
+
+            console.log(ownerList);
+
+            this.setState(state => ({
+              ...state,
+              fieldList: fields.concat(ownerList),
+            }))
           }
         })
     }

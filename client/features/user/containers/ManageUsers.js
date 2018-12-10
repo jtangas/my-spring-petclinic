@@ -5,10 +5,11 @@ import { withRouter } from 'react-router-dom';
 import { Container } from 'semantic-ui-react';
 
 import { createUserAction, updateUserAction } from 'features/user/actions/users';
-import List from 'features/user/components/List/List';
+import ConnectedList from 'features/app/components/List/ConnectedList';
 import CreateUser from 'features/user/components/Form/CreateUser';
 import UserTemplate from 'features/user/components/Form/templates/UserTemplate';
 import NotFound from 'features/app/containers/NotFound';
+import TableHeaders from 'features/user/components/Form/definitions/TableHeaders';
 
 const mapDispatchToProps = {
   addNewUser: createUserAction,
@@ -49,7 +50,7 @@ export default
     if (action === 'view' && !id || (!action && !id)) {
       return (
         <Container style={{ padding: '10px', flex: 1}}>
-          <List type={type}/>
+          <ConnectedList type={type} tableHeaders={TableHeaders} />
         </Container>
       )
     }

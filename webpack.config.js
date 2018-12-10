@@ -1,5 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
+import TerserPlugin from 'terser-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
 import IndexPagePlugin from './templates/IndexPluginTemplate';
 
@@ -65,6 +66,15 @@ module.exports = () => (
       maxEntrypointSize: 600000,
       maxAssetSize: 600000,
       hints: false,
+    },
+    optimization: {
+      minimize: false,
+      minimizer: [
+        new TerserPlugin({
+          cache: true,
+          parallel: true
+        })
+      ]
     },
     plugins: removeEmpty([
       new webpack.DefinePlugin({

@@ -5,6 +5,7 @@ import {
   Grid,
   Segment,
   Dropdown,
+  Search
 } from 'semantic-ui-react';
 import { FieldArray } from 'formik';
 import { textFields, fieldHasLabel } from 'features/form/config';
@@ -82,6 +83,24 @@ const RenderField = props => {
               handleChange(d);
             }}
           />
+        )
+      }
+      {
+        field.type === 'selectSearch' && (
+          <Dropdown
+            search
+            selection
+            width={field.width}
+            name={field.name}
+            placeholder={field.placeholder}
+            fluid
+            options={field.options}
+            autoComplete="new-password"
+            onChange={(e, data) => {
+              const d = {target: data};
+              handleChange(d);
+            }}
+            />
         )
       }
       {

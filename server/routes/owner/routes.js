@@ -7,6 +7,41 @@ import Owner from "../../models/owner";
 export default () => {
   let router = express.Router();
 
+  router.route("/search")
+    .post(async (req, res) => {
+      const { query } = req.body;
+      const searchParams = {
+        $or: [
+          {
+            firstName: { $regex: query, $options: "i"},
+          },
+          {
+            lastName: { $regex: query, $options: "i"},
+          },
+          {
+            address: { $regex: query, $options: "i"},
+          },
+        ]
+      };
+      Owner.find(searchParams, async (err, owners) => {
+        if (err) {
+          res.json({
+            success: false,
+            message: err.toString(),
+            requestId: uuid(),
+          });
+          return;
+        }
+
+        res.json({
+          success: true,
+          message: 'owners found',
+          data: owners,
+          requestId: uuid(),
+        });
+      });
+    });
+
   router.route("/:id")
     .put((req, res) => {
       const { id } = req.params;
@@ -108,34 +143,48 @@ export default () => {
 
   router.route("/")
     .get((req, res) => {
-      Owner.aggregate([
-        {
-          $match: {}
-        },
-        {
-          $project: {
-            _id: 1,
-            firstName: 1,
-            lastName: 1,
-            address: 1,
-            city: 1,
-            telephone: 1,
-            type: 'owners',
-          }
-        },
-        {
-          $skip: parseInt((req.query.page-1) * req.query.perPage)
-        },
-        {
-          $limit: parseInt(req.query.perPage),
+      const {
+        page = false,
+        perPage = false,
+      } = req.query;
+
+      let paginate = [];
+      let pipeline = [];
+      pipeline.push({$match: {}});
+      pipeline.push({
+        $project: {
+          _id: 1,
+          firstName: 1,
+          lastName: 1,
+          address: 1,
+          city: 1,
+          telephone: 1,
+          type: 'owners',
         }
-      ], (err, result) => {
+      });
+
+      if (page && perPage) {
+          pipeline.push(
+            {
+              $skip: parseInt((page-1) * perPage)
+            },
+            {
+              $limit: parseInt(perPage),
+            }
+          );
+      }
+
+      console.log(pipeline);
+
+      Owner.aggregate(pipeline, (err, result) => {
         if (err) {
           res.json({
             success: false,
             message: err.toString(),
             requestId: uuid(),
           });
+
+          return;
         }
 
         res.json({

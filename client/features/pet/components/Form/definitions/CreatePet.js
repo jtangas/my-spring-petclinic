@@ -35,5 +35,13 @@ export const Fields = [
       {key: 'bbbb', text: 'Dog', value: 'bbbb'},
     ],
     width: 8
+  },
+  {
+    type: 'selectSearch',
+    name: 'owner',
+    label: 'Pets Owner',
+    placeholder: 'Start typing owners name',
+    width: 8,
+    options: []
   }
 ];

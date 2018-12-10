@@ -9,6 +9,8 @@ import { updateUserAction } from "../../user/actions/users";
 import { createPetAction } from 'features/pet/actions/pets';
 import PetTemplate from 'features/pet/components/Form/templates/CreatePetTemplate';
 import CreatePet from 'features/pet/components/Form/CreatePet';
+import ConnectedList from 'features/app/components/List/ConnectedList';
+import TableHeaders from 'features/pet/components/Form/definitions/TableHeaders';
 
 const mapDispatchToProps = {
   addNewPet: createPetAction,
@@ -30,6 +32,7 @@ compose(
   const { id, action } = match.params;
   const handleUpdateSubmit = values => updateUser(id, values);
   const handleSubmit = values => addNewPet(values);
+  const type = 'pets';
 
   if (id !== null && id !== false && action === 'edit') {
     return (
@@ -48,8 +51,7 @@ compose(
   if (action === 'view' && !id || (!action && !id)) {
     return (
       <Container style={{ padding: '10px', flex: 1}}>
-        {/*<List type={type}/>*/}
-        <p>List of pets</p>
+        <ConnectedList type={type} tableHeaders={TableHeaders} />
       </Container>
     )
   }

@@ -1,20 +1,7 @@
 import React from 'react';
 import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
 import { Segment, Button, Table } from 'semantic-ui-react';
-
-import { loadUsersAction, fetchUsersAction } from 'features/user/actions/users';
-import TableHeaders from 'features/user/components/Form/definitions/TableHeaders';
-
-const mapDispatchToProps = {
-  loadUsers: loadUsersAction,
-};
-
-const mapStateToProps = state => ({
-  users: state.user.list,
-  fetched: state.user.fetched,
-});
 
 const extractValue = value => {
   let valueIsBool = (typeof value === typeof true);
@@ -30,7 +17,7 @@ const extractValue = value => {
 };
 
 const GenerateRows = props => {
-  const { data, history } = props;
+  const { data, history, type, tableHeaders } = props;
   if (data.length === 0) {
     return (
       <Table.Row>
@@ -40,29 +27,31 @@ const GenerateRows = props => {
   }
 
   return (
+    data.map(user => {
+      const entityType = ['owners','vets'].includes(type) ? `/users/${user.type}` : '/pets';
+      return (
+        <Table.Row key={`row_${user._id}`}>
+          {
+            tableHeaders.map(column => {
+              if (user.hasOwnProperty(column.name)) {
+                return <Table.Cell key={`data_${user._id}_${column.name}`}>{extractValue(user[column.name])}</Table.Cell>;
+              }
 
-    data.map(user => (
-      <Table.Row key={`row_${user._id}`}>
-        {
-          TableHeaders.map(column => {
-            if (user.hasOwnProperty(column.name)) {
-              return <Table.Cell key={`data_${user._id}_${column.name}`}>{extractValue(user[column.name])}</Table.Cell>;
-            }
-
-            return <Table.Cell key={`data_${user._id}_${column.name}`}>{column.default}</Table.Cell>;
-          })
-        }
-        <Table.Cell key={`actions_${user._id}`}>
-          <Button onClick={() => history.push(`/users/${user.type}/edit/${user._id}`)}>Edit</Button>
-          <Button onClick={() => console.log(user._id)}>Delete</Button>
-        </Table.Cell>
-      </Table.Row>
-    ))
+              return <Table.Cell key={`data_${user._id}_${column.name}`}>{column.default}</Table.Cell>;
+            })
+          }
+          <Table.Cell key={`actions_${user._id}`}>
+            <Button onClick={() => history.push(`${entityType}/edit/${user._id}`)}>Edit</Button>
+            <Button onClick={() => console.log(user._id)}>Delete</Button>
+          </Table.Cell>
+        </Table.Row>
+      )
+    })
   );
 };
 
 
-class List extends React.Component {
+class ConnectedList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -100,7 +89,7 @@ class List extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const {
-      type,
+      type = 'users',
     } = nextProps;
 
     const {
@@ -147,6 +136,7 @@ class List extends React.Component {
   render() {
     const {
       history,
+      tableHeaders,
       type = 'users',
     } = this.props;
 
@@ -165,12 +155,12 @@ class List extends React.Component {
           <Table striped>
             <Table.Header>
               <Table.Row>
-                {TableHeaders.map(header => (
+                {tableHeaders.map(header => (
                   <Table.HeaderCell key={header.display}>{header.display}</Table.HeaderCell>
                 ))}
                 <Table.HeaderCell>Actions</Table.HeaderCell>
               </Table.Row>
-              <GenerateRows history={history} data={results} />
+              <GenerateRows tableHeaders={tableHeaders} history={history} data={results} />
             </Table.Header>
           </Table>
         )}
@@ -181,5 +171,4 @@ class List extends React.Component {
 
 export default compose(
   withRouter,
-  connect(mapStateToProps, mapDispatchToProps),
-)(List);
+)(ConnectedList);

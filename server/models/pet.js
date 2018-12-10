@@ -5,8 +5,8 @@ let Schema = mongoose.Schema;
 let PetSchema = new Schema({
   name: String,
   birthDate: Date,
-  type: Object,
-  owner: Object,
+  petType: String,
+  owner: String,
 });
 
 module.exports = mongoose.model('Pet', PetSchema);

@@ -1,5 +1,4 @@
 const createPetAction = values => dispatch => {
-  console.log('test');
   const url = `/api/pets`;
   dispatch({
     type: 'API_REQUEST',
@@ -10,7 +9,7 @@ const createPetAction = values => dispatch => {
     },
     body: JSON.stringify(values),
     actions: {
-      success: 'ADD_NEW_PET',
+      success: 'PUSH_NOTIFICATION',
     }
   });
 };

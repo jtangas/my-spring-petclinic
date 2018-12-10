@@ -21,7 +21,6 @@ const loadUsersAction = (type, users = [], perPage = 10, page = 1) => dispatch =
 const updateUserAction = (userId, values) => dispatch => {
   const { type } = values;
   const url = `/api/${type}/${userId}`;
-  console.log(url);
   dispatch({
     type: 'API_REQUEST',
     endpoint: url,
@@ -31,8 +30,8 @@ const updateUserAction = (userId, values) => dispatch => {
     },
     body: JSON.stringify(values),
     actions: {
-      success: 'UPDATE_USER',
-      failure: 'FAILED_UPDATE_USER',
+      success: 'PUSH_NOTIFICATION',
+      failure: 'PUSH_NOTIFICATION',
     }
   });
 };
@@ -50,7 +49,7 @@ const createUserAction = values => dispatch => new Promise((resolve, reject) => 
       },
       body: JSON.stringify(values),
       actions: {
-        success: 'ADD_NEW_USER',
+        success: 'PUSH_NOTIFICATION',
       }
     });
   } catch (err) {
