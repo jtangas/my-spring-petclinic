@@ -28,6 +28,7 @@ const GenerateRows = props => {
 
   return (
     data.map(entity => {
+      console.log(type);
       const entityType = ['owners','vets'].includes(type) ? `/users/${entity.type}` : '/pets';
       const systemData = system[type] !== undefined ? system[type] : null;
       return (
@@ -162,7 +163,7 @@ class ConnectedList extends React.Component {
                 ))}
                 <Table.HeaderCell>Actions</Table.HeaderCell>
               </Table.Row>
-              <GenerateRows system={system} tableHeaders={tableHeaders} history={history} data={results} />
+              <GenerateRows type={type} system={system} tableHeaders={tableHeaders} history={history} data={results} />
             </Table.Header>
           </Table>
         )}

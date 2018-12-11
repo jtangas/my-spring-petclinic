@@ -4,6 +4,7 @@
   "description": "Spring Pet Clinic",
   "main": "index.js",
   "scripts": {
+    "seed:db": "NODE_ENV=development NODE_PATH=client/ babel-node seed.js",
     "start:dev": "NODE_ENV=development NODE_PATH=client/ nodemon --watch server --watch client --exec babel-node index.js"
   },
   "author": "Justin Tangas <justin.tangas@gmail.com>",
@@ -39,6 +40,7 @@
     "bcrypt": "^3.0.2",
     "codemirror": "^5.41.0",
     "css-loader": "^1.0.0",
+    "debounce": "^1.2.0",
     "dotenv": "^6.1.0",
     "eslint": "^5.8.0",
     "eslint-config-airbnb": "^17.1.0",

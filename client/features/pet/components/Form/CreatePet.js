@@ -24,7 +24,6 @@ class CreatePet extends React.Component {
     const { currentPet, fieldList } = this.state;
 
     if (petId !== undefined && (currentPet === null || (currentPet !== null && currentPet._id !== petId))) {
-      console.log('fetching pet data');
       fetch(`/api/pets/${petId}`)
         .then(res => res.json())
         .then(data => {
@@ -84,8 +83,6 @@ class CreatePet extends React.Component {
               id: owner._id,
             }));
 
-            console.log(owners);
-
             const ownerList = {
               type: 'selectSearch',
               name: 'owner',
@@ -117,8 +114,6 @@ class CreatePet extends React.Component {
 
     const Template = UserDefinedTemplate || CreatePetTemplate;
     const { currentPet, fieldList } = this.state;
-
-    console.log(currentPet);
 
     let initialValues = currentPet || Values;
 

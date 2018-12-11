@@ -28,6 +28,7 @@ export default () => {
           res.json({
             success: false,
             message: err.toString(),
+            query: query,
             requestId: uuid(),
           });
           return;
@@ -112,6 +113,14 @@ export default () => {
           $match: {_id: userId},
         },
         {
+          $lookup: {
+            from: "pets",
+            localField: "_id",
+            foreignField: "owner",
+            as: "pets"
+          }
+        },
+        {
           $project: {
             _id: 1,
             firstName: 1,
@@ -119,6 +128,7 @@ export default () => {
             address: 1,
             city: 1,
             telephone: 1,
+            pets: 1,
             type: 'owners',
           }
         }], (err, result) => {

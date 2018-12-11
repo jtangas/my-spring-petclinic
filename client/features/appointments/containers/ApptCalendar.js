@@ -6,6 +6,8 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
+import CreateAppointment from 'features/appointments/components/Form/CreateAppointment';
+
 const localizer = Calendar.momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
@@ -54,7 +56,7 @@ class ApptCalendar extends React.Component {
   render() {
     const { events } = this.state;
     return (
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
         <DnDCalendar
           defaultDate={new Date()}
           defaultView="month"
@@ -66,6 +68,7 @@ class ApptCalendar extends React.Component {
           style={{ display: 'flex', flex: 1 }}
           localizer={localizer}
         />
+        <CreateAppointment />
       </div>
     )
   }
