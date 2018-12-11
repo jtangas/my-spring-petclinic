@@ -22,7 +22,7 @@ Navigate into the cloned directory
 ```sh
 $: cd /path/to/my-spring-petclinic
 $: yarn install
-$: yarn run seed:db
+$: yarn run seed:db // ctrl+c to exit when done
 $: yarn run start:dev
 ```
 
@@ -30,6 +30,6 @@ Then finally navigate to the application in your browser by visiting [http://loc
 
 #### Demo Username/password
 ```sh
-username: admin
+username: admin@example.com
 password: demo
 ```
