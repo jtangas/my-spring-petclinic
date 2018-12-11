@@ -94,6 +94,7 @@ const RenderField = props => {
             name={field.name}
             placeholder={field.placeholder}
             fluid
+            defaultValue={values[field.name]}
             options={field.options}
             autoComplete="new-password"
             onChange={(e, data) => {

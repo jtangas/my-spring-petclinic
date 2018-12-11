@@ -174,8 +174,6 @@ export default () => {
           );
       }
 
-      console.log(pipeline);
-
       Owner.aggregate(pipeline, (err, result) => {
         if (err) {
           res.json({

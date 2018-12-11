@@ -24,6 +24,7 @@ class CreatePet extends React.Component {
     const { currentPet, fieldList } = this.state;
 
     if (petId !== undefined && (currentPet === null || (currentPet !== null && currentPet._id !== petId))) {
+      console.log('fetching pet data');
       fetch(`/api/pets/${petId}`)
         .then(res => res.json())
         .then(data => {
@@ -41,6 +42,7 @@ class CreatePet extends React.Component {
         .then(res => res.json())
         .then(data => {
           if (data.success) {
+            console.log(data.data);
             this.setState(state => ({
               ...state,
               fieldList: [
@@ -58,7 +60,7 @@ class CreatePet extends React.Component {
                 },
                 {
                   type: 'select',
-                  name: 'type',
+                  name: 'petType',
                   label: 'Type of Pet',
                   placeholder: 'Please Select',
                   options: data.data,
@@ -71,18 +73,26 @@ class CreatePet extends React.Component {
     }
 
     let ownerList = fieldList.find(field => field.name === 'owner');
-    if (!ownerList && fieldList.length > 0) {
+    if (ownerList === undefined) {
       fetch(`/api/owners`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
+            const owners = data.data.map(owner => ({
+              text: `${owner.firstName.slice(0,1).toUpperCase()}${owner.firstName.slice(1).toLowerCase()} ${owner.lastName.slice(0,1).toUpperCase()}${owner.lastName.slice(1).toLowerCase()}`,
+              value: owner._id,
+              id: owner._id,
+            }));
+
+            console.log(owners);
+
             const ownerList = {
               type: 'selectSearch',
               name: 'owner',
               label: 'Pets Owner',
               placeholder: 'Start typing owners name',
               width: 8,
-              options: data.data
+              options: owners
             };
 
             this.setState(state => ({
@@ -108,6 +118,8 @@ class CreatePet extends React.Component {
     const Template = UserDefinedTemplate || CreatePetTemplate;
     const { currentPet, fieldList } = this.state;
 
+    console.log(currentPet);
+
     let initialValues = currentPet || Values;
 
     if (fieldList.length === 0) {
@@ -117,8 +129,6 @@ class CreatePet extends React.Component {
     if (petId !== undefined && !currentPet) {
       return (<div><p>Loading form</p></div>);
     }
-
-    console.log(fieldList);
 
     return (
       <Formik

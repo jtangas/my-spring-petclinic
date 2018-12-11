@@ -3,9 +3,9 @@ import mongoose from 'mongoose';
 let Schema = mongoose.Schema;
 
 let ApptSchema = new Schema({
-  pet: Object,
-  owner: Object,
-  vet: Object,
+  pet: Schema.ObjectId,
+  owner: Schema.ObjectId,
+  vet: Schema.ObjectId,
   datetime: Date,
 });
 

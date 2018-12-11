@@ -1,7 +1,10 @@
 import express from 'express';
 
 import Pet from '../../models/pet';
+import PetType from '../../models/pet-type';
 import uuid from '../../helpers/uuid';
+import Owner from "../../models/owner";
+import mongoose from "mongoose";
 
 
 export default () => {
@@ -80,6 +83,119 @@ export default () => {
           requestId: uuid(),
         })
       })
+    });
+
+  router.route("/:id")
+    .put((req, res) => {
+      const { id } = req.params;
+      const {
+        name,
+        birthDate,
+        petType,
+        owner,
+      } = req.body;
+
+      const {
+        _id,
+      } = req.body;
+
+      if (id !== _id) {
+        res.json({
+          success: false,
+          message: 'Malformed Request',
+          requestId: uuid(),
+        });
+        return;
+      }
+
+      Pet.findOne({_id: id}, (err, pet) => {
+        if (err) {
+          res.json({
+            success: false,
+            message: err.toString(),
+            requestId: uuid(),
+          });
+          return;
+        }
+
+        pet.set({
+          name,
+          birthDate,
+          petType: mongoose.Types.ObjectId(petType),
+          owner: mongoose.Types.ObjectId(owner),
+        });
+
+        pet.save((err, updatedPet) => {
+          if (err) {
+            res.json({
+              success: false,
+              message: err.toString(),
+              requestId: uuid(),
+            });
+            return;
+          }
+
+          res.json({
+            success: true,
+            message: 'Updated Pet successfully',
+            data: updatedPet,
+            requestId: uuid(),
+          });
+        });
+      });
+    })
+    .get((req, res) => {
+      const { id } = req.params;
+      const petId = mongoose.Types.ObjectId(id);
+
+      Pet.aggregate([
+        {
+          $match: {_id: petId},
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            birthDate: 1,
+            petType: 1,
+            owner: 1,
+            type: 'pets',
+          }
+        },
+        {
+          $lookup: {
+            from: 'pettypes',
+            localField: 'petType',
+            foreignField: '_id',
+            as: 'mappedPetType'
+          }
+        },
+        {
+          $lookup: {
+            from: 'owners',
+            localField: 'owner',
+            foreignField: '_id',
+            as: 'mappedOwner'
+          }
+        }
+        ], (err, result) => {
+
+        if (err) {
+          res.json({
+            success: false,
+            message: err.toString(),
+            requestId: uuid(),
+          });
+          return;
+        }
+
+        res.json({
+          success: true,
+          message: 'Pet fetched successfully',
+          data: result[0],
+          requestId: uuid(),
+        });
+      });
     });
 
   return router;

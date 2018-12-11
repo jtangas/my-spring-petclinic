@@ -3,5 +3,5 @@ export const textFields = [
 ];
 
 export const fieldHasLabel = [
-  'text', 'password', 'hidden', 'select', 'checkboxGroup',
+  'text', 'password', 'hidden', 'select', 'checkboxGroup', 'selectSearch',
 ];

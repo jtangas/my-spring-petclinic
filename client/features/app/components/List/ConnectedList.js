@@ -17,7 +17,7 @@ const extractValue = value => {
 };
 
 const GenerateRows = props => {
-  const { data, history, type, tableHeaders } = props;
+  const { data, history, type, tableHeaders, system } = props;
   if (data.length === 0) {
     return (
       <Table.Row>
@@ -27,22 +27,23 @@ const GenerateRows = props => {
   }
 
   return (
-    data.map(user => {
-      const entityType = ['owners','vets'].includes(type) ? `/users/${user.type}` : '/pets';
+    data.map(entity => {
+      const entityType = ['owners','vets'].includes(type) ? `/users/${entity.type}` : '/pets';
+      const systemData = system[type] !== undefined ? system[type] : null;
       return (
-        <Table.Row key={`row_${user._id}`}>
+        <Table.Row key={`row_${entity._id}`}>
           {
             tableHeaders.map(column => {
-              if (user.hasOwnProperty(column.name)) {
-                return <Table.Cell key={`data_${user._id}_${column.name}`}>{extractValue(user[column.name])}</Table.Cell>;
+              if (entity.hasOwnProperty(column.name)) {
+                return <Table.Cell key={`data_${entity._id}_${column.name}`}>{extractValue(entity[column.name])}</Table.Cell>;
               }
 
-              return <Table.Cell key={`data_${user._id}_${column.name}`}>{column.default}</Table.Cell>;
+              return <Table.Cell key={`data_${entity._id}_${column.name}`}>{column.default}</Table.Cell>;
             })
           }
-          <Table.Cell key={`actions_${user._id}`}>
-            <Button onClick={() => history.push(`${entityType}/edit/${user._id}`)}>Edit</Button>
-            <Button onClick={() => console.log(user._id)}>Delete</Button>
+          <Table.Cell key={`actions_${entity._id}`}>
+            <Button onClick={() => history.push(`${entityType}/edit/${entity._id}`)}>Edit</Button>
+            <Button onClick={() => console.log(entity._id)}>Delete</Button>
           </Table.Cell>
         </Table.Row>
       )
@@ -60,10 +61,27 @@ class ConnectedList extends React.Component {
       page: 1,
       perPage: 10,
       results: [],
+      system: [],
     };
   }
 
-  loadUsers(type, page, perPage) {
+  loadPetTypes() {
+    fetch(`/api/system/pet-types`)
+      .then(res => res.json())
+      .then(data => {
+        if(data.success) {
+          this.setState(state => ({
+            ...state,
+            system: {
+              ...state.system,
+              pets: data.data,
+            }
+          }))
+        }
+      });
+  }
+
+  loadContent(type, page, perPage) {
     fetch(`/api/${type}?page=${page}&perPage=${perPage}`)
       .then(res => res.json())
       .then(data => {
@@ -97,12 +115,12 @@ class ConnectedList extends React.Component {
       perPage,
     } = this.state;
 
-    this.loadUsers(type, page, perPage);
+    this.loadContent(type, page, perPage);
   }
 
   componentWillMount() {
     const {
-      type = 'users',
+      type: entityType = 'users',
     } = this.props;
 
     const {
@@ -110,27 +128,10 @@ class ConnectedList extends React.Component {
       perPage,
     } = this.state;
 
-    fetch(`/api/${type}?page=${page}&perPage=${perPage}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          this.setState(state => ({
-            ...state,
-            results: data.data,
-          }));
-        } else {
-          this.setState(state => ({
-            ...state,
-            noResults: true,
-          }));
-        }
-      })
-      .catch(err => {
-        this.setState(state => ({
-          ...state,
-          noResults: true,
-        }));
-      });
+    this.loadContent(entityType, page, perPage);
+    if (entityType === 'pets') {
+      this.loadPetTypes();
+    }
   }
 
   render() {
@@ -142,6 +143,7 @@ class ConnectedList extends React.Component {
 
     const {
       results,
+      system,
     } = this.state;
 
     const typeDisplay = `${type.slice(0,1).toUpperCase()}${type.slice(1)}`;
@@ -160,7 +162,7 @@ class ConnectedList extends React.Component {
                 ))}
                 <Table.HeaderCell>Actions</Table.HeaderCell>
               </Table.Row>
-              <GenerateRows tableHeaders={tableHeaders} history={history} data={results} />
+              <GenerateRows system={system} tableHeaders={tableHeaders} history={history} data={results} />
             </Table.Header>
           </Table>
         )}

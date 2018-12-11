@@ -43,7 +43,8 @@ export default () => {
           $project: {
             _id: 0,
             id: "$$ROOT._id",
-            name: 1,
+            text: "$$ROOT.name",
+            value: "$$ROOT._id"
           }
         }
       ], (err, result) => {
